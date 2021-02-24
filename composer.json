@@ -5,6 +5,7 @@
     "require": {
         "aliyunmq/mq-http-sdk": ">=1.0.3"
     },
+    "minimum-stability": "stable",
     "license": "MIT",
     "authors": [
         {
