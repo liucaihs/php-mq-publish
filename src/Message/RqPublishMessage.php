@@ -7,8 +7,12 @@
 
 namespace PangKu\RocketMQ\Message;
 
-
-class RqPublishMessage
+//普通消息
+class RqPublishMessage implements RqMessage
 {
 
+    public function getTopicMessage()
+    {
+
+    }
 }

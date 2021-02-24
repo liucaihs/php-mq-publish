@@ -7,9 +7,8 @@
 
 namespace PangKu\RocketMQ;
 
-
-use MQ\Model\TopicMessage;
 use MQ\MQClient;
+use PangKu\RocketMQ\Message\RqMessage;
 
 class PkPublish
 {
@@ -20,6 +19,7 @@ class PkPublish
     private $configRequire = ["account_endpoint", "access_id", "access_key", "topic", "instance_id"];
 
     private $log = null;
+    private $logSuccess = false;
 
     public function __construct($config)
     {
@@ -50,30 +50,50 @@ class PkPublish
         $this->producer = $this->client->getProducer($instanceId, $topic);
     }
 
-    public function setLogHandler()
+    public function setLogHandler($log, $logSuccess = false)
     {
-
+        $this->log = $log;
+        $this->logSuccess = $logSuccess;
     }
 
-    public function publishMessage(TopicMessage $publishMessage)
+    public function publishMessage(RqMessage $publishMessage)
     {
-        try {
+        $logData = [];
 
-            $result = $this->producer->publishMessage($publishMessage);
-            print $this->config["tag"] . " Send mq message success. msgId is:" . $result->getMessageId() . ", bodyMD5 is:" . $result->getMessageBodyMD5() . "\n";
+        try {
+            $topicMessage = $publishMessage->getTopicMessage();
+
+            $logData['messageBody'] = $topicMessage->getMessageBody();
+            $logData['messageTag'] = $topicMessage->getMessageTag();
+            $logData['properties'] = $topicMessage->getProperties();
+
+            $result = $this->producer->publishMessage($topicMessage);
+
+            $logData["extra"] = [
+                "text" => "Send success. msgId is:" . $result->getMessageId() . ", bodyMD5 is:" . $result->getMessageBodyMD5(),
+            ];
+            $logData["msgId"] = $result->getMessageId();
+            $logData["bodyMD5"] = $result->getMessageBodyMD5();
+            $this->logRecord($logData);
 
         } catch (\Exception $e) {
-            print_r($e->getMessage() . "\n");
+//            print_r($e->getMessage() . "\n");
+            throw new \Exception("RocketMQ 发布消息错误 " . $e->getMessage());
+
         }
     }
 
-    protected function logErro($data)
+
+    protected function logRecord($data)
     {
-
-    }
-
-    protected function logSuccess($data)
-    {
-
+        if (!empty($this->log) && !empty($data)) {
+            if (empty($data["msgId"]) || empty($data["bodyMD5"])) {
+                $data["result"] = "发布消息错误";
+                $this->log->error(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            } elseif ($this->logSuccess && !empty($data["msgId"]) && !empty($data["bodyMD5"])) {
+                $data["result"] = "发布消息成功";
+                $this->log->info(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            }
+        }
     }
 }

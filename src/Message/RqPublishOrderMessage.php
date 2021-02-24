@@ -1,5 +1,6 @@
 <?php
 /**
+ * 顺序消息
  * user: liucai
  * Date：2021/2/24
  * Time: 11:52
@@ -10,9 +11,16 @@ namespace PangKu\RocketMQ\Message;
 
 use MQ\Model\TopicMessage;
 
-
-class RqPublishOrderMessage
+//顺序消息
+class RqPublishOrderMessage implements RqMessage
 {
+    protected $topicMessage;
+
+    public function getTopicMessage()
+    {
+        return $this->topicMessage;
+    }
+
     /**
      * RqPublishOrderMessage constructor.
      * @param $messageBody 消息内容
@@ -35,7 +43,7 @@ class RqPublishOrderMessage
             throw new \InvalidArgumentException('the array initialize for Invalid propertys params');
         }
 
-        return $this->initMessage($messageBody, $shardingKey, $messageTag, $propertys);
+        $this->initMessage($messageBody, $shardingKey, $messageTag, $propertys);
     }
 
     /**
@@ -48,7 +56,7 @@ class RqPublishOrderMessage
     protected function initMessage($messageBody, $shardingKey, $messageTag, $propertys = [])
     {
         $publishMessage = new TopicMessage(
-            $$messageBody// 消息内容
+            $messageBody
         );
         // 设置属性
         if (!empty($propertys) && is_array($propertys)) {
@@ -64,6 +72,6 @@ class RqPublishOrderMessage
             $publishMessage->setMessageTag($messageTag);
         }
 
-        return $publishMessage;
+        $this->topicMessage = $publishMessage;
     }
 }

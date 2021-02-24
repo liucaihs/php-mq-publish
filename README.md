@@ -9,7 +9,7 @@
 
 3.封装sdk要求
 
-
+参考https://code.pangku.com:30000/lixiaohong/tyrex
 
 发布结构:
 $pkOrderProducer = new PkPublish($config);
@@ -24,4 +24,4 @@ $topicMessage = $pkOrderProducer->publishMessage($rocketmqPublishMessage);
 
 了解一下monolog/monolog
 
-sdk库的name p/php-mq-publish
+sdk库的name pangku/php-mq-publish
