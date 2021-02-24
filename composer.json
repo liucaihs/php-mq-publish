@@ -1,0 +1,17 @@
+{
+    "name": "pangku/php-mq-publish",
+    "description": "rocketmq Publish Order Message",
+    "type": "library",
+    "require": {
+        "aliyunmq/mq-http-sdk": ">=1.0.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "liucai",
+            "email": "1207204940@qq.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
++
