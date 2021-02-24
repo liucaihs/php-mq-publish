@@ -26,6 +26,7 @@ $topicMessage = $pkOrderProducer->publishMessage($rocketmqPublishMessage);
 
 sdk库的name pangku/php-mq-publish
 
+composer require monolog/monolog
 ```
 use PangKu\RocketMQ\PkPublish;
 use PangKu\RocketMQ\Message\RqPublishOrderMessage;
